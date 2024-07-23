@@ -6,6 +6,8 @@ from discord.ext import commands
 from dotenv import load_dotenv
 #import random
 
+description = "garfy's little bot guy thing"
+
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
@@ -14,18 +16,20 @@ intents.members = True
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
-client = discord.Client(intents=intents)
+bot = commands.Bot(command_prefix='$', description=description, intents=intents)
 
-@client.event
+@bot.event
 async def on_ready():
-    print(f'{client.user} has connected to Discord!')
+    await bot.tree.sync()
+    print(f'logged in as {bot.user} (ID: {bot.user.id})')
 
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
-    
-    if message.content.startswith('$allo'):
-        await message.channel.send('oui?')
 
-client.run(TOKEN)
+@bot.tree.command(name="add",description="add two numbers")
+async def add(interaction:discord.Interaction, left: int, right : int):
+    await interaction.response.send_message(left + right)
+
+@bot.tree.command(name="pp",description="add two numbers")
+async def pp(interaction:discord.Interaction, member: discord.Member, right : int):
+    await interaction.response.send_message(f'{member}')
+
+bot.run(TOKEN)
