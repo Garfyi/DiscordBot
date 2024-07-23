@@ -1,5 +1,6 @@
 # bot.py
 import os
+import os.path
 import json
 
 import discord
@@ -25,11 +26,18 @@ async def on_ready():
     print(f'logged in as {bot.user} (ID: {bot.user.id})')
 
 
-@bot.tree.command(name="addgbp",description="add two numbers")
-async def pp(interaction:discord.Interaction, member: discord.Member, amount : int):
-    f = open(str(member.id) + '.txt', "r")
-    
-            
-    await interaction.response.send_message(f'{member}')
-
+@bot.tree.command(name="addgbp",description="add good boy points to member")
+async def addgbp(interaction:discord.Interaction, member: discord.Member, amount : int):
+    if os.path.isfile(f'{str(member.id)}.txt'):
+        f = open(f'{str(member.id)}.txt', "r")
+        gbp = int(f.read())
+        f.close()
+        f = open(f'{str(member.id)}.txt', "w+")
+        f.write(str(gbp + amount))
+    else:
+        f = open(f'{str(member.id)}.txt', "w+")
+        f.write(str(0 + amount))
+        
+    await interaction.response.send_message(f'{member} now has {f.read()} Good Boy Points!')
+    f.close()
 bot.run(TOKEN)
