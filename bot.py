@@ -27,6 +27,10 @@ async def on_ready():
 
 @bot.tree.command(name="addgbp",description="add good boy points to member")
 async def addgbp(interaction:discord.Interaction, member: discord.Member, amount : int):
+    if amount > 3 or amount < -3:
+        await interaction.response.send_message(f'The amount of Good Boy Points added has to be between -3 and 3')
+        return
+
     if os.path.isfile(f'{str(member.id)}.txt'):
         f = open(f'{str(member.id)}.txt', "r")
         gbp = int(f.read())
