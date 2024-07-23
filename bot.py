@@ -32,24 +32,24 @@ async def addgbp(interaction:discord.Interaction, member: discord.Member, amount
         return
 
     if os.path.isfile(f'{member.id}.txt'):
-        f = open(f'{member.id}.txt', "r")
+        f = open(f'GPB_data/{member.id}.txt', "r")
         gbp = int(f.read())
         f.close()
-        f = open(f'{member.id}.txt', "w+")
+        f = open(f'GPB_data/{member.id}.txt', "w+")
         f.write(f'{gbp + amount}')
         f.close()
     else:
         await interaction.response.send_message(f'{member} does not have a GPB profile')
         return
         
-    f = open(f'{member.id}.txt', "r")
+    f = open(f'GPB_data/{member.id}.txt', "r")
     await interaction.response.send_message(f'{member} now has {f.read()} Good Boy Points!')
     f.close()
 
 @bot.tree.command(name="showgbp",description="show member's good boy points")
 async def showgbp(interaction:discord.Interaction, member: discord.Member):
-    if os.path.isfile(f'{member.id}.txt'):
-        f = open(f'{member.id}.txt', "r")
+    if os.path.isfile(f'GPB_data/{member.id}.txt'):
+        f = open(f'GPB_data/{member.id}.txt', "r")
         gbp = int(f.read())
         f.close()
     else:
@@ -63,7 +63,7 @@ async def showgbp(interaction:discord.Interaction, member: discord.Member):
 @bot.tree.command(name="creategbp",description="creates gbp profile for command caller")
 async def creategbp(interaction:discord.Interaction):
     if os.path.isfile(f'{interaction.user.id}.txt') is False:
-        f = open(f'{interaction.user.id}.txt', "w+")
+        f = open(f'GPB_data/{interaction.user.id}.txt', "w+")
         f.write(f'0')
         f.close()
     else:
