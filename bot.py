@@ -36,7 +36,7 @@ async def addgbp(interaction:discord.Interaction, member: discord.Member, amount
         gbp = int(f.read())
         f.close()
         f = open(f'{member.id}.txt', "w+")
-        f.write(str(gbp + amount))
+        f.write(f'{gbp + amount}')
         f.close()
     else:
         await interaction.response.send_message(f'{member} does not have a GPB profile')
@@ -51,12 +51,26 @@ async def showgbp(interaction:discord.Interaction, member: discord.Member):
     if os.path.isfile(f'{member.id}.txt'):
         f = open(f'{member.id}.txt', "r")
         gbp = int(f.read())
+        f.close()
     else:
         await interaction.response.send_message(f'{member} does not have a GPB profile')
         return
+    
+    await interaction.response.send_message(f'{member} currently has {gbp} Good Boy Points')
+    
+
+# Adds member text file to store profile info
+@bot.tree.command(name="creategbp",description="creates gbp profile for command caller")
+async def creategbp(interaction:discord.Interaction):
+    if os.path.isfile(f'{interaction.user.id}.txt') is False:
+        f = open(f'{interaction.user.id}.txt', "w+")
+        f.write(f'0')
+        f.close()
+    else:
+        await interaction.response.send_message(f'{interaction.user} already has a GPB profile')
+        return
         
-    await interaction.response.send_message(f'{member} currently has {gbp} Good Boy Points!')
-    f.close()
+    await interaction.response.send_message(f'Good Boy Point profile successfully created for {interaction.user}')
 
 # If users are added dynamically it's going to take up a lot of space
 """"
