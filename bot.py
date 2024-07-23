@@ -34,7 +34,7 @@ async def addgbp(interaction:discord.Interaction, member: discord.Member, amount
         f = open(f'{str(member.id)}.txt', "w+")
         f.write(str(gbp + amount))
     else:
-        await interaction.response.send_message(f'{member} is does not have a GPB profile')
+        await interaction.response.send_message(f'{member} does not have a GPB profile')
         return
         
     await interaction.response.send_message(f'{member} now has {f.read()} Good Boy Points!')
@@ -46,7 +46,7 @@ async def showgbp(interaction:discord.Interaction, member: discord.Member):
         f = open(f'{str(member.id)}.txt', "r")
         gbp = int(f.read())
     else:
-        await interaction.response.send_message(f'{member} is does not have a GPB profile')
+        await interaction.response.send_message(f'{member} does not have a GPB profile')
         return
         
     await interaction.response.send_message(f'{member} currently has {gbp} Good Boy Points!')
