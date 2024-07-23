@@ -31,23 +31,25 @@ async def addgbp(interaction:discord.Interaction, member: discord.Member, amount
         await interaction.response.send_message(f'The amount of Good Boy Points added has to be between -3 and 3')
         return
 
-    if os.path.isfile(f'{str(member.id)}.txt'):
-        f = open(f'{str(member.id)}.txt', "r")
+    if os.path.isfile(f'{member.id}.txt'):
+        f = open(f'{member.id}.txt', "r")
         gbp = int(f.read())
         f.close()
-        f = open(f'{str(member.id)}.txt', "w+")
+        f = open(f'{member.id}.txt', "w+")
         f.write(str(gbp + amount))
+        f.close()
     else:
         await interaction.response.send_message(f'{member} does not have a GPB profile')
         return
         
+    f = open(f'{member.id}.txt', "r")
     await interaction.response.send_message(f'{member} now has {f.read()} Good Boy Points!')
     f.close()
 
 @bot.tree.command(name="showgbp",description="show member's good boy points")
 async def showgbp(interaction:discord.Interaction, member: discord.Member):
-    if os.path.isfile(f'{str(member.id)}.txt'):
-        f = open(f'{str(member.id)}.txt', "r")
+    if os.path.isfile(f'{member.id}.txt'):
+        f = open(f'{member.id}.txt', "r")
         gbp = int(f.read())
     else:
         await interaction.response.send_message(f'{member} does not have a GPB profile')
@@ -60,6 +62,10 @@ async def showgbp(interaction:discord.Interaction, member: discord.Member):
 """"
 @bot.tree.command(name="addgbp",description="add good boy points to member")
 async def addgbp(interaction:discord.Interaction, member: discord.Member, amount : int):
+    if amount > 3 or amount < -3:
+        await interaction.response.send_message(f'The amount of Good Boy Points added has to be between -3 and 3')
+        return
+
     if os.path.isfile(f'{str(member.id)}.txt'):
         f = open(f'{str(member.id)}.txt', "r")
         gbp = int(f.read())
