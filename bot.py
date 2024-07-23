@@ -49,7 +49,7 @@ async def showgbp(interaction:discord.Interaction, member: discord.Member):
         await interaction.response.send_message(f'{member} is does not have a GPB profile')
         return
         
-    await interaction.response.send_message(f'{member} now has {gbp} Good Boy Points!')
+    await interaction.response.send_message(f'{member} currently has {gbp} Good Boy Points!')
     f.close()
 
 # If users are added dynamically it's going to take up a lot of space
