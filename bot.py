@@ -1,5 +1,6 @@
 # bot.py
 import os
+import json
 
 import discord
 from discord.ext import commands
@@ -24,12 +25,11 @@ async def on_ready():
     print(f'logged in as {bot.user} (ID: {bot.user.id})')
 
 
-@bot.tree.command(name="add",description="add two numbers")
-async def add(interaction:discord.Interaction, left: int, right : int):
-    await interaction.response.send_message(left + right)
-
-@bot.tree.command(name="pp",description="add two numbers")
-async def pp(interaction:discord.Interaction, member: discord.Member, right : int):
+@bot.tree.command(name="addgbp",description="add two numbers")
+async def pp(interaction:discord.Interaction, member: discord.Member, amount : int):
+    f = open(str(member.id) + '.txt', "r")
+    
+            
     await interaction.response.send_message(f'{member}')
 
 bot.run(TOKEN)
