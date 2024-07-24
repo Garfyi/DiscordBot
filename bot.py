@@ -29,8 +29,8 @@ async def on_ready():
 @bot.event
 async def on_message(interaction:discord.Interaction):
     if interaction.user.id == 781574003264716800:
-        randInt = random.randint(0,9)
-        if randInt == 9:
+        randInt = random.randint(0,15)
+        if randInt == 15:
             await interaction.response.send_message(f'stfu gio')
 
 # Adds gbp to a user if they have a profile
