@@ -33,7 +33,7 @@ async def on_message(message):
     if message.author == bot.user:
         return
     
-    if "g.kill" in message.content:
+    if "g.kill" == message.content:
         await bot.close()
 
     if message.author == 781574003264716800:
@@ -42,15 +42,15 @@ async def on_message(message):
             await message.channel.send(f'stfu gio')
 
 # Adds gbp to a user if they have a profile
-@bot.tree.command(name="addgbp",description="add good boy points to member min:-3 max:3")
-async def addgbp(interaction:discord.Interaction, member: discord.Member, amount : int):
+@bot.tree.command(name="givegbp",description="give good boy points to member min:-3 max:3")
+async def givegbp(interaction:discord.Interaction, member: discord.Member, amount : int):
 
     if interaction.user == member:
         await interaction.response.send_message(f'kys')
         return
 
     if amount > 3 or amount < -3:
-        await interaction.response.send_message(f'The amount of Good Boy Points added has to be between -3 and 3')
+        await interaction.response.send_message(f'The amount of Good Boy Points given/taken has to be between -3 and 3')
         return
 
     if os.path.isfile(f'GPB_data/{member.id}.txt'):
