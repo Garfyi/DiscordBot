@@ -31,7 +31,7 @@ async def addgbp(interaction:discord.Interaction, member: discord.Member, amount
         await interaction.response.send_message(f'The amount of Good Boy Points added has to be between -3 and 3')
         return
 
-    if os.path.isfile(f'{member.id}.txt'):
+    if os.path.isfile(f'GPB_data/{member.id}.txt'):
         f = open(f'GPB_data/{member.id}.txt', "r")
         gbp = int(f.read())
         f.close()
@@ -43,7 +43,12 @@ async def addgbp(interaction:discord.Interaction, member: discord.Member, amount
         return
         
     f = open(f'GPB_data/{member.id}.txt', "r")
-    await interaction.response.send_message(f'{member} now has {f.read()} Good Boy Points!')
+    if amount < 0:
+        await interaction.response.send_message(f'{interaction.user} has taken away {amount * -1} Good Boy Points from {member}. They now have {f.read()} Good Boy Points!')
+        f.close()
+        return
+    
+    await interaction.response.send_message(f'{interaction.user} has given {amount} Good Boy Points to {member}. They now have {f.read()} Good Boy Points!')
     f.close()
 
 @bot.tree.command(name="showgbp",description="show member's good boy points")
