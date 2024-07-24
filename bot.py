@@ -6,7 +6,7 @@ import json
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
-#import random
+import random
 
 description = "garfy's little bot guy thing"
 
@@ -25,6 +25,15 @@ async def on_ready():
     await bot.tree.sync()
     print(f'logged in as {bot.user} (ID: {bot.user.id})')
 
+
+@bot.event
+async def on_message(interaction:discord.Interaction):
+    if interaction.user.id == 781574003264716800:
+        randInt = random.randint(0,9)
+        if randInt == 9:
+            await interaction.response.send_message(f'stfu gio')
+
+# Adds gbp to a user if they have a profile
 @bot.tree.command(name="addgbp",description="add good boy points to member")
 async def addgbp(interaction:discord.Interaction, member: discord.Member, amount : int):
     if amount > 3 or amount < -3:
@@ -51,6 +60,7 @@ async def addgbp(interaction:discord.Interaction, member: discord.Member, amount
     await interaction.response.send_message(f'{interaction.user} has given {amount} Good Boy Points to {member}. They now have {f.read()} Good Boy Points!')
     f.close()
 
+# Shows how many good boy points a user has
 @bot.tree.command(name="showgbp",description="show member's good boy points")
 async def showgbp(interaction:discord.Interaction, member: discord.Member):
     if os.path.isfile(f'GPB_data/{member.id}.txt'):
