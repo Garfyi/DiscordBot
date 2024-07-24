@@ -18,24 +18,37 @@ intents.members = True
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
-bot = commands.Bot(command_prefix='$', description=description, intents=intents)
+bot = commands.Bot(command_prefix='g.', description=description, intents=intents)
 
+# When bot is online
 @bot.event
 async def on_ready():
     await bot.tree.sync()
     print(f'logged in as {bot.user} (ID: {bot.user.id})')
 
 
+# Anytime a message is sent in any channel
 @bot.event
-async def on_message(interaction:discord.Interaction):
-    if interaction.user.id == 781574003264716800:
+async def on_message(message):
+    if message.author == bot.user:
+        return
+    
+    if "g.kill" in message.content:
+        await bot.close()
+
+    if message.author == 781574003264716800:
         randInt = random.randint(0,15)
         if randInt == 15:
-            await interaction.response.send_message(f'stfu gio')
+            await message.channel.send(f'stfu gio')
 
 # Adds gbp to a user if they have a profile
-@bot.tree.command(name="addgbp",description="add good boy points to member")
+@bot.tree.command(name="addgbp",description="add good boy points to member min:-3 max:3")
 async def addgbp(interaction:discord.Interaction, member: discord.Member, amount : int):
+
+    if interaction.user == member:
+        await interaction.response.send_message(f'kys')
+        return
+
     if amount > 3 or amount < -3:
         await interaction.response.send_message(f'The amount of Good Boy Points added has to be between -3 and 3')
         return
