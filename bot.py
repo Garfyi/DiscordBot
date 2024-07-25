@@ -34,6 +34,7 @@ async def on_message(message):
         return
     
     if "g.kill" == message.content:
+        print(f'Some dude killed the bot')
         await bot.close()
 
     if message.author.id == 781574003264716800:
