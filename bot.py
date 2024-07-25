@@ -29,22 +29,32 @@ async def on_ready():
 
 # Anytime a message is sent in any channel
 @bot.event
-async def on_message(message):
-    if message.author == bot.user:
+async def on_message(ctx):
+    if ctx.author == bot.user:
         return
     
-    if "g.kill" == message.content:
+    if "g.kill" == ctx.content:
         print(f'Some dude killed the bot')
         await bot.close()
 
-    if message.author.id == 781574003264716800:
-        randInt = random.randint(0,30)
-        if randInt == 30:
-            await message.channel.send(f'stfu gio')
+    if "g.shame" == ctx.content:
+        print('shame')
+        message = await ctx.channel.fetch_message(ctx.reference.message_id)
+        shamed = f'{message.author} shamed for: {message.content} \n'
+        print(f'{shamed}')
+        f = open(f'Shame_data/data.txt', "a")
+        f.write(shamed)
+        f.close()
+
+    await ctx.channel.send(shamed)
 
 #   Slash commands  Slash commands  Slash commands
 #   Slash commands  Slash commands  Slash commands
 #   Slash commands  Slash commands  Slash commands
+
+#
+# GOOD BOY POINTS SECTION
+#
 
 # Adds gbp to a user if they have a profile
 @bot.tree.command(name="givegbp",description="give good boy points to member min:-3 max:3")
@@ -125,6 +135,21 @@ async def leaderboard(interaction:discord.Interaction):
 
     await interaction.response.send_message(f'{board}')
     
+#
+# SHAME SECTION
+#
+
+# Shames a user, adds message to database
+@bot.command()
+async def shame(ctx):
+    print('shame')
+    userid = ctx.channel.fetch_message(ctx.message.reference.message_id)
+    shamed = f'{ctx.channel.fetch_message(ctx.message.reference.message_id)} shamed for: {ctx.channel.fetch_message(ctx.message.reference.message_id)} \n'
+    #f = open(f'Shame_data/data.txt', "a")
+    #f.write(shamed)
+    #f.close()
+
+    await ctx.response.send_message(shamed)
 
 
 # If users are added dynamically it's going to take up a lot of space
