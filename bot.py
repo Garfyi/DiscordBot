@@ -8,17 +8,11 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
-description = "garfy's little bot guy thing"
-
-intents = discord.Intents.default()
-intents.message_content = True
-intents.members = True
-
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
-bot = commands.Bot(command_prefix='g.', description=description, intents=intents)
+bot = commands.Bot(command_prefix='g.', intents=discord.Intents.all())
 
 # When bot is online
 @bot.event
@@ -39,18 +33,26 @@ async def on_message(ctx):
 
     if "g.shame" == ctx.content:
         print('shame')
-        message = await ctx.channel.fetch_message(ctx.reference.message_id)
-        shamed = f'{message.author} shamed for: {message.content} \n'
-        print(f'{shamed}')
+        try:
+            message = await ctx.channel.fetch_message(ctx.reference.message_id)
+        except:
+            await ctx.channel.send('You must reply to the message you want to shame')
+            return
+    
+        shamed = f'{message.author} was shamed for: {message.content} \n'
+        
         f = open(f'Shame_data/data.txt', "a")
         f.write(shamed)
         f.close()
 
-    await ctx.channel.send(shamed)
+        await ctx.channel.send(shamed)
+        return
+
 
 #   Slash commands  Slash commands  Slash commands
 #   Slash commands  Slash commands  Slash commands
 #   Slash commands  Slash commands  Slash commands
+
 
 #
 # GOOD BOY POINTS SECTION
@@ -134,22 +136,6 @@ async def leaderboard(interaction:discord.Interaction):
         board += str(f'{user} : {gbp} \n')
 
     await interaction.response.send_message(f'{board}')
-    
-#
-# SHAME SECTION
-#
-
-# Shames a user, adds message to database
-@bot.command()
-async def shame(ctx):
-    print('shame')
-    userid = ctx.channel.fetch_message(ctx.message.reference.message_id)
-    shamed = f'{ctx.channel.fetch_message(ctx.message.reference.message_id)} shamed for: {ctx.channel.fetch_message(ctx.message.reference.message_id)} \n'
-    #f = open(f'Shame_data/data.txt', "a")
-    #f.write(shamed)
-    #f.close()
-
-    await ctx.response.send_message(shamed)
 
 
 # If users are added dynamically it's going to take up a lot of space
