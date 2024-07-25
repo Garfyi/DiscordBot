@@ -1,12 +1,12 @@
 # bot.py
 import os
 import os.path
-import json
+import random
+from collections import OrderedDict
 
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
-import random
 
 description = "garfy's little bot guy thing"
 
@@ -36,10 +36,14 @@ async def on_message(message):
     if "g.kill" == message.content:
         await bot.close()
 
-    if message.author == 781574003264716800:
-        randInt = random.randint(0,15)
-        if randInt == 15:
+    if message.author.id == 781574003264716800:
+        randInt = random.randint(0,30)
+        if randInt == 30:
             await message.channel.send(f'stfu gio')
+
+#   Slash commands  Slash commands  Slash commands
+#   Slash commands  Slash commands  Slash commands
+#   Slash commands  Slash commands  Slash commands
 
 # Adds gbp to a user if they have a profile
 @bot.tree.command(name="givegbp",description="give good boy points to member min:-3 max:3")
@@ -53,18 +57,18 @@ async def givegbp(interaction:discord.Interaction, member: discord.Member, amoun
         await interaction.response.send_message(f'The amount of Good Boy Points given/taken has to be between -3 and 3')
         return
 
-    if os.path.isfile(f'GPB_data/{member.id}.txt'):
-        f = open(f'GPB_data/{member.id}.txt', "r")
+    if os.path.isfile(f'GBP_data/{member.id}.txt'):
+        f = open(f'GBP_data/{member.id}.txt', "r")
         gbp = int(f.read())
         f.close()
-        f = open(f'GPB_data/{member.id}.txt', "w+")
+        f = open(f'GBP_data/{member.id}.txt', "w+")
         f.write(f'{gbp + amount}')
         f.close()
     else:
         await interaction.response.send_message(f'{member} does not have a GPB profile')
         return
         
-    f = open(f'GPB_data/{member.id}.txt', "r")
+    f = open(f'GBP_data/{member.id}.txt', "r")
     if amount < 0:
         await interaction.response.send_message(f'{interaction.user} has taken away {amount * -1} Good Boy Points from {member}. They now have {f.read()} Good Boy Points!')
         f.close()
@@ -76,8 +80,8 @@ async def givegbp(interaction:discord.Interaction, member: discord.Member, amoun
 # Shows how many good boy points a user has
 @bot.tree.command(name="showgbp",description="show member's good boy points")
 async def showgbp(interaction:discord.Interaction, member: discord.Member):
-    if os.path.isfile(f'GPB_data/{member.id}.txt'):
-        f = open(f'GPB_data/{member.id}.txt', "r")
+    if os.path.isfile(f'GBP_data/{member.id}.txt'):
+        f = open(f'GBP_data/{member.id}.txt', "r")
         gbp = int(f.read())
         f.close()
     else:
@@ -91,7 +95,7 @@ async def showgbp(interaction:discord.Interaction, member: discord.Member):
 @bot.tree.command(name="creategbp",description="creates gbp profile for command caller")
 async def creategbp(interaction:discord.Interaction):
     if os.path.isfile(f'{interaction.user.id}.txt') is False:
-        f = open(f'GPB_data/{interaction.user.id}.txt', "w+")
+        f = open(f'GBP_data/{interaction.user.id}.txt', "w+")
         f.write(f'0')
         f.close()
     else:
@@ -99,6 +103,28 @@ async def creategbp(interaction:discord.Interaction):
         return
         
     await interaction.response.send_message(f'Good Boy Point profile successfully created for {interaction.user}')
+
+
+# Displays everybody's numbre of Good Boy Points as a leaderboard
+@bot.tree.command(name="leaderboard",description="shows gbp leaderboard")
+async def leaderboard(interaction:discord.Interaction):
+    files = os.listdir('./GBP_data')
+    dict = OrderedDict()
+    board = 'Good Boy Point leaderboard\n'
+
+    for file in files :
+        amount = open(f'GBP_data/{file}', 'r')
+        dict[bot.get_user(int(file.removesuffix('.txt'))).name] = int(amount.read())
+        amount.close()
+
+    sortedDict  = OrderedDict(sorted(dict.items(), key=lambda x: x[1], reverse=True))
+
+    for user, gbp in sortedDict.items():
+        board += str(f'{user} : {gbp} \n')
+
+    await interaction.response.send_message(f'{board}')
+    
+
 
 # If users are added dynamically it's going to take up a lot of space
 """"
