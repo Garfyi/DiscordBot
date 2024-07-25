@@ -32,17 +32,17 @@ async def on_message(ctx):
         await bot.close()
 
     if "g.shame" == ctx.content:
-        print('shame')
         try:
             message = await ctx.channel.fetch_message(ctx.reference.message_id)
         except:
             await ctx.channel.send('You must reply to the message you want to shame')
             return
     
-        shamed = f'{message.author} was shamed for: {message.content} \n'
+        print (ctx.reference.message_id)
+        shamed = f'{message.author} was shamed for: {message.content}'
         
         f = open(f'Shame_data/data.txt', "a")
-        f.write(shamed)
+        f.write(f'{shamed} {message.jump_url} \n')
         f.close()
 
         await ctx.channel.send(shamed)
