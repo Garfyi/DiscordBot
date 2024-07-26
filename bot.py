@@ -32,27 +32,42 @@ async def on_message(ctx):
         await bot.close()
 
     if "g.shame" == ctx.content:
-        try:
-            message = await ctx.channel.fetch_message(ctx.reference.message_id)
-        except:
-            await ctx.channel.send('You must reply to the message you want to shame')
-            return
-    
-        print (ctx.reference.message_id)
-        shamed = f'{message.author} was shamed for: {message.content}'
-        
-        f = open(f'Shame_data/data.txt', "a")
-        f.write(f'{shamed} {message.jump_url} \n')
-        f.close()
-
-        await ctx.channel.send(shamed)
+        await shameChat(ctx)
         return
 
 
-#   Slash commands  Slash commands  Slash commands
-#   Slash commands  Slash commands  Slash commands
-#   Slash commands  Slash commands  Slash commands
+#
+#  SHAME SECTION
+#
 
+# Shames user function when used as chat message
+
+async def shameChat(ctx):
+    try:
+        message = await ctx.channel.fetch_message(ctx.reference.message_id)
+    except:
+        await ctx.channel.send('You must reply to the message you want to shame')
+        return
+
+    shamed = f'{message.author} was shamed after saying: {message.content}'
+    
+    f = open(f'Shame_data/data.txt', "a")
+    f.write(f'{shamed} {message.jump_url} \n')
+    f.close()
+
+    await ctx.channel.send(shamed)
+    return
+
+
+@bot.tree.context_menu(name="shame")
+async def shame(interaction:discord.Interaction, message:discord.Message):
+    shamed = f'{message.author} was shamed after saying: {message.content}'
+    
+    f = open(f'Shame_data/data.txt', "a")
+    f.write(f'{shamed} {message.jump_url} \n')
+    f.close()
+
+    await interaction.response.send_message(shamed)
 
 #
 # GOOD BOY POINTS SECTION
