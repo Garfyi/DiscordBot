@@ -42,10 +42,13 @@ async def on_message(ctx):
 #  SHAME SECTION
 #
 
+
 # Shames user function when used as chat message
 
 async def shame_chat(ctx):
 
+    # checks if the message is a reply, if so get the original from the reply message's id
+    # otherwise exception
     try:
         message = await ctx.channel.fetch_message(ctx.reference.message_id)
     except:
@@ -59,7 +62,6 @@ async def shame_chat(ctx):
     f.close()
 
     await ctx.channel.send(shamed)
-    return
 
 
 @BOT.tree.context_menu(name="shame")
@@ -74,9 +76,13 @@ async def shame(interaction:discord.Interaction, message:discord.Message):
     await interaction.response.send_message(shamed)
 
 
+# TODO function to show most recent shames
+
+
 #
 # TRANSLATION SECTION
 #
+
 
 # Translate the message to english from the context menu
 @BOT.tree.context_menu(name="translate")
@@ -92,10 +98,12 @@ async def translate(interaction:discord.Interaction, message:discord.Message):
 # GOOD BOY POINTS SECTION
 #
 
+
 # Adds gbp to a user if they have a profile
 @BOT.tree.command(name="givegbp",description="give good boy points to member min:-3 max:3")
 async def givegbp(interaction:discord.Interaction, member: discord.Member, amount : int):
 
+    # Check if user is trying to give himself Good Boy Points
     if interaction.user == member:
         await interaction.response.send_message(f'kys')
         return
@@ -124,6 +132,7 @@ async def givegbp(interaction:discord.Interaction, member: discord.Member, amoun
     await interaction.response.send_message(f'{interaction.user} has given {amount} Good Boy Points to {member}. They now have {f.read()} Good Boy Points!')
     f.close()
 
+
 # Shows how many good boy points a user has
 @BOT.tree.command(name="showgbp",description="show member's good boy points")
 async def showgbp(interaction:discord.Interaction, member: discord.Member):
@@ -137,12 +146,13 @@ async def showgbp(interaction:discord.Interaction, member: discord.Member):
         return
     
     await interaction.response.send_message(f'{member} currently has {gbp} Good Boy Points')
-    
+
 
 # Adds member text file to store profile info
 @BOT.tree.command(name="creategbp",description="creates gbp profile for command caller")
 async def creategbp(interaction:discord.Interaction):
 
+    # If no file is present with for user make one and store 0
     if os.path.isfile(f'{interaction.user.id}.txt') is False:
         f = open(f'GBP_data/{interaction.user.id}.txt', "w+")
         f.write(f'0')
@@ -154,7 +164,7 @@ async def creategbp(interaction:discord.Interaction):
     await interaction.response.send_message(f'Good Boy Point profile successfully created for {interaction.user}')
 
 
-# Displays everybody's numbre of Good Boy Points as a leaderboard
+# Displays everybody's amount of Good Boy Points as a leaderboard
 @BOT.tree.command(name="leaderboard",description="shows gbp leaderboard")
 async def leaderboard(interaction:discord.Interaction):
 
