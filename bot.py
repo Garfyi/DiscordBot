@@ -3,6 +3,9 @@ import os
 import os.path
 from collections import OrderedDict
 
+import random
+
+# API for discord
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -25,6 +28,10 @@ TRANSLATOR = Translator()
 GENIUS = Genius(GENIUS_TOKEN)
 GENIUS.response_format = 'plain'
 
+BOT.duet_happening = False
+BOT.duet_user = ''
+BOT.duet_answer = ''
+
 # When bot is online
 @BOT.event
 async def on_ready():
@@ -42,6 +49,16 @@ async def on_message(ctx):
         print(f'Some dude killed the bot')
         await BOT.close()
 
+    if BOT.duet_happening and ctx.author == BOT.duet_user:
+        BOT.duet_happening = False
+
+        if ctx.content == BOT.duet_answer:
+            await ctx.channel.send(f'Congrats! You got the answer!')
+        else:
+            await ctx.channel.send(f"That's not the right answer! The right answer was {BOT.duet_answer}")
+        return
+
+    # Calls the shame comamnd
     if "g.shame" == ctx.content:
         await shame_chat(ctx)
         return
@@ -125,7 +142,34 @@ async def translate(interaction:discord.Interaction, song_name:str, artist_name:
     await interaction.response.send_message(f'{lyrics[0:1999]}')
 
 
-# TODO Duet minigame (bot send lyrics but except last one user has to guess it)
+# Search for a song and send all but last lyric, user has to guess it to win 
+@BOT.tree.command(name="duet")
+async def duet(interaction:discord.Interaction, song_name:str, artist_name:str):
+
+    # Code does allow for two duets to happen at the same time
+    if BOT.duet_happening == True:
+        await interaction.response.send_message(f'WAIT YOUR TURN')
+        return
+
+    song = GENIUS.search_song(song_name, artist_name)
+    # Create list of all the lines in the lyrics
+    lyrics = song.lyrics.splitlines()
+
+    # Get a random line from the lyrics
+    index = random.randint(1, len(lyrics) - 1)
+    line = lyrics[index]
+    
+    # Get all the words in the line
+    words = line.split()
+
+    # Assign the last word as the answer and hide it
+    answer = words[-1]
+    line = line.replace(answer, f' _______')
+
+    await interaction.response.send_message(f'{line}')
+    BOT.duet_happening = True
+    BOT.duet_user = interaction.user
+    BOT.duet_answer = answer
 
 
 #
