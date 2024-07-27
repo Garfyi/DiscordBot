@@ -53,9 +53,9 @@ async def on_message(ctx):
         BOT.duet_happening = False
 
         if ctx.content == BOT.duet_answer:
-            await ctx.channel.send(f'Congrats! You got the answer!')
+            await ctx.channel.send(f'Congrats! You got the right lyric!')
         else:
-            await ctx.channel.send(f"That's not the right answer! The right answer was {BOT.duet_answer}")
+            await ctx.channel.send(f"That's not the right lyric! The lyric was {BOT.duet_answer}")
         return
 
     # Calls the shame comamnd
