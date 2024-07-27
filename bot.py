@@ -7,14 +7,23 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
+# API for google translate
 import googletrans
 from googletrans import Translator
 
+# API for lyrics
+from lyricsgenius import Genius
+
+
 load_dotenv()
-TOKEN = os.getenv('DISCORD_TOKEN')
+DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
+GENIUS_TOKEN = os.getenv('GENIUS_TOKEN')
+
 
 BOT = commands.Bot(command_prefix='g.', intents=discord.Intents.all())
 TRANSLATOR = Translator()
+GENIUS = Genius(GENIUS_TOKEN)
+GENIUS.response_format = 'plain'
 
 # When bot is online
 @BOT.event
@@ -92,6 +101,31 @@ async def translate(interaction:discord.Interaction, message:discord.Message):
     text = TRANSLATOR.translate(message.content, dest='en').text
 
     await interaction.response.send_message(f'{message.author} said : "{text}" in {googletrans.LANGUAGES[f'{src.lang}']}')
+
+
+#
+# ALL MUSIC RELATED SECTION
+#
+
+
+# Search for a song and send lyrics in chat if found 
+@BOT.tree.command(name="lyrics")
+async def translate(interaction:discord.Interaction, song_name:str, artist_name:str):
+
+    # if lyricsbeingsent :
+    #   return
+
+    song = GENIUS.search_song(song_name, artist_name)
+    lyrics = song.lyrics
+
+    # TODO bot can only send 2000 characters fix so it sends entire lyrics
+    # IDEA: make a job that executes every second, have global bool that is true if lyrics are being sent
+    # when lyrics are all sent reset bool to false
+
+    await interaction.response.send_message(f'{lyrics[0:1999]}')
+
+
+# TODO Duet minigame (bot send lyrics but except last one user has to guess it)
 
 
 #
@@ -206,4 +240,4 @@ async def addgbp(interaction:discord.Interaction, member: discord.Member, amount
     await interaction.response.send_message(f'{member} now has {f.read()} Good Boy Points!')
     f.close()
 """
-BOT.run(TOKEN)
+BOT.run(DISCORD_TOKEN)
