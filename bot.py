@@ -163,10 +163,11 @@ async def duet(interaction:discord.Interaction, song_name:str, artist_name:str):
     words = line.split()
 
     # Assign the last word as the answer and hide it
-    answer = words[-1]
+    answer = words[len(words)-1]
     line = line.replace(answer, f' _______')
 
     await interaction.response.send_message(f'{line}')
+
     BOT.duet_happening = True
     BOT.duet_user = interaction.user
     BOT.duet_answer = answer
