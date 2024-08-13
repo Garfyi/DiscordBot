@@ -1,13 +1,19 @@
 ################################################
 #
 #   BEFORE USING
-#   You must create two folders
-#   One named GPB_data
-#   One named Shame_data
+#   You must create two folders and one file
+#   One folder named GPB_data (Leave empty)
+#   One folder named Shame_data (Leave empty)
+#
+#   Create a file named .env
+#   This is where you will store you Bot token and Genius token to connect to the APIs
+#   Add these lines in the file
+#
+#   DISCORD_TOKEN = "Your Bot token here"
+#   GENIUS_TOKEN = "Your Genius token here"
 #
 ################################################
 
-# bot.py
 import os
 import os.path
 from collections import OrderedDict
@@ -28,7 +34,7 @@ from lyricsgenius import Genius
 
 
 load_dotenv()
-DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
+BOT_TOKEN = os.getenv('DISCORD_TOKEN')
 GENIUS_TOKEN = os.getenv('GENIUS_TOKEN')
 
 # Prefix currently doesn't work, please set your prefix in the functions
@@ -40,6 +46,7 @@ GENIUS.response_format = 'plain'
 BOT.duet_happening = False
 BOT.duet_user = ''
 BOT.duet_answer = ''
+
 
 # When bot is online
 @BOT.event
@@ -78,12 +85,11 @@ async def on_message(ctx):
 #
 
 
-# Shames user function when used as chat message
-
+# Continuation of shame user function from on_message() function
 async def shame_chat(ctx):
 
-    # checks if the message is a reply, if so get the original from the reply message's id
-    # otherwise exception
+    # try to get the message as a reply
+    # if not a reply, get exception
     try:
         message = await ctx.channel.fetch_message(ctx.reference.message_id)
     except:
@@ -112,6 +118,7 @@ async def shame(interaction:discord.Interaction, message:discord.Message):
 
 
 # TODO function to show most recent shames
+# TODO function to show all shames
 
 
 #
@@ -124,6 +131,9 @@ async def shame(interaction:discord.Interaction, message:discord.Message):
 async def translate(interaction:discord.Interaction, message:discord.Message):
 
     src = TRANSLATOR.detect(message.content)
+
+    # Set the language you want to translate to here instead of 'en'
+    # For all possible language and their abbreviations https://github.com/ssut/py-googletrans/blob/master/googletrans/constants.py
     text = TRANSLATOR.translate(message.content, dest='en').text
 
     await interaction.response.send_message(f'{message.author} said : "{text}" in {googletrans.LANGUAGES[f'{src.lang}']}')
@@ -138,26 +148,23 @@ async def translate(interaction:discord.Interaction, message:discord.Message):
 @BOT.tree.command(name="lyrics")
 async def translate(interaction:discord.Interaction, song_name:str, artist_name:str):
 
-    # if lyricsbeingsent :
-    #   return
 
     song = GENIUS.search_song(song_name, artist_name)
     lyrics = song.lyrics
 
     # TODO bot can only send 2000 characters fix so it sends entire lyrics
-    # IDEA: make a job that executes every second, have global bool that is true if lyrics are being sent
-    # when lyrics are all sent reset bool to false
 
     await interaction.response.send_message(f'{lyrics[0:1999]}')
 
 
-# Search for a song and send all but last lyric, user has to guess it to win 
+# Search for a song and send all but last lyric, user has to guess it to win
+# TODO add time limit to guess otherwise the duet goes on forever until user sends another message
 @BOT.tree.command(name="duet")
 async def duet(interaction:discord.Interaction, song_name:str, artist_name:str):
 
-    # Code does allow for two duets to happen at the same time
+    # Code does not allow for two duets to happen at the same time
     if BOT.duet_happening == True:
-        await interaction.response.send_message(f'WAIT YOUR TURN')
+        await interaction.response.send_message(f'A duet is already happening, please wait your turn')
         return
 
     song = GENIUS.search_song(song_name, artist_name)
@@ -187,19 +194,20 @@ async def duet(interaction:discord.Interaction, song_name:str, artist_name:str):
 #
 
 
-# Adds gbp to a user if they have a profile
+# Adds GBPs to a user if they have a profile
 @BOT.tree.command(name="givegbp",description="give good boy points to member min:-3 max:3")
 async def givegbp(interaction:discord.Interaction, member: discord.Member, amount : int):
 
     # Check if user is trying to give himself Good Boy Points
     if interaction.user == member:
-        await interaction.response.send_message(f'kys')
+        await interaction.response.send_message(f'You cannot give yourself GBPs')
         return
 
     if amount > 3 or amount < -3:
         await interaction.response.send_message(f'The amount of Good Boy Points given/taken has to be between -3 and 3')
         return
 
+    # Check if user has a GBP profile
     if os.path.isfile(f'GBP_data/{member.id}.txt'):
         f = open(f'GBP_data/{member.id}.txt', "r")
         gbp = int(f.read())
@@ -208,9 +216,9 @@ async def givegbp(interaction:discord.Interaction, member: discord.Member, amoun
         f.write(f'{gbp + amount}')
         f.close()
     else:
-        await interaction.response.send_message(f'{member} does not have a GPB profile')
+        await interaction.response.send_message(f'{member} does not have a GPB profile. Ask user to use /creategbp to create a GBP profile')
         return
-        
+    
     f = open(f'GBP_data/{member.id}.txt', "r")
     if amount < 0:
         await interaction.response.send_message(f'{interaction.user} has taken away {amount * -1} Good Boy Points from {member}. They now have {f.read()} Good Boy Points!')
@@ -240,7 +248,7 @@ async def showgbp(interaction:discord.Interaction, member: discord.Member):
 @BOT.tree.command(name="creategbp",description="creates gbp profile for command caller")
 async def creategbp(interaction:discord.Interaction):
 
-    # If no file is present with for user make one and store 0
+    # If no file is present for user make one and store 0 GBP
     if os.path.isfile(f'{interaction.user.id}.txt') is False:
         f = open(f'GBP_data/{interaction.user.id}.txt', "w+")
         f.write(f'0')
@@ -273,7 +281,8 @@ async def leaderboard(interaction:discord.Interaction):
     await interaction.response.send_message(f'{board}')
 
 
-# If users are added dynamically it's going to take up a lot of space
+# If users are added dynamically it could end up taking up a lot of space
+# And some users might not want to have to participate in this whole GBP thingy
 """"
 @bot.tree.command(name="addgbp",description="add good boy points to member")
 async def addgbp(interaction:discord.Interaction, member: discord.Member, amount : int):
