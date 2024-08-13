@@ -9,7 +9,7 @@
 #   This is where you will store you Bot token and Genius token to connect to the APIs
 #   Add these lines in the file
 #
-#   DISCORD_TOKEN = "Your Bot token here"
+#   BOT_TOKEN = "Your Bot token here"
 #   GENIUS_TOKEN = "Your Genius token here"
 #
 ################################################
@@ -303,4 +303,4 @@ async def addgbp(interaction:discord.Interaction, member: discord.Member, amount
     await interaction.response.send_message(f'{member} now has {f.read()} Good Boy Points!')
     f.close()
 """
-BOT.run(DISCORD_TOKEN)
+BOT.run(BOT_TOKEN)
