@@ -1,3 +1,12 @@
+################################################
+#
+#   BEFORE USING
+#   You must create two folders
+#   One named GPB_data
+#   One named Shame_data
+#
+################################################
+
 # bot.py
 import os
 import os.path
@@ -22,7 +31,7 @@ load_dotenv()
 DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 GENIUS_TOKEN = os.getenv('GENIUS_TOKEN')
 
-
+# Prefix currently doesn't work, please set your prefix in the functions
 BOT = commands.Bot(command_prefix='g.', intents=discord.Intents.all())
 TRANSLATOR = Translator()
 GENIUS = Genius(GENIUS_TOKEN)
@@ -42,11 +51,11 @@ async def on_ready():
 # Anytime a message is sent in any channel
 @BOT.event
 async def on_message(ctx):
+    # Make sure the bot doesn't call a command on his own messages
     if ctx.author == BOT.user:
         return
     
     if "g.kill" == ctx.content:
-        print(f'Some dude killed the bot')
         await BOT.close()
 
     if BOT.duet_happening and ctx.author == BOT.duet_user:
@@ -55,7 +64,7 @@ async def on_message(ctx):
         if ctx.content == BOT.duet_answer:
             await ctx.channel.send(f'Congrats! You got the right lyric!')
         else:
-            await ctx.channel.send(f"That's not the right lyric! The lyric was {BOT.duet_answer}")
+            await ctx.channel.send(f'That is not the right lyric! The lyric was "{BOT.duet_answer}"')
         return
 
     # Calls the shame comamnd
@@ -81,7 +90,7 @@ async def shame_chat(ctx):
         await ctx.channel.send('You must reply to the message you want to shame')
         return
 
-    shamed = f'{message.author} was shamed after saying: {message.content}'
+    shamed = f'{message.author} was shamed for saying: {message.content}'
     
     f = open(f'Shame_data/data.txt', "a")
     f.write(f'{shamed} {message.jump_url} \n')
