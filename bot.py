@@ -34,7 +34,7 @@ from lyricsgenius import Genius
 
 
 load_dotenv()
-BOT_TOKEN = os.getenv('DISCORD_TOKEN')
+BOT_TOKEN = os.getenv('BOT_TOKEN')
 GENIUS_TOKEN = os.getenv('GENIUS_TOKEN')
 
 # Prefix currently doesn't work, please set your prefix in the functions
